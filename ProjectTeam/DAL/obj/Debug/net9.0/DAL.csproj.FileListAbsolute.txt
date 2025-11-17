@@ -1,0 +1,14 @@
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\bin\Debug\net9.0\DAL.deps.json
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\bin\Debug\net9.0\DAL.runtimeconfig.json
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\bin\Debug\net9.0\DAL.dll
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\bin\Debug\net9.0\DAL.pdb
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.csproj.AssemblyReference.cache
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.AssemblyInfoInputs.cache
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.AssemblyInfo.cs
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.csproj.CoreCompileInputs.cache
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.dll
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\refint\DAL.dll
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.pdb
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.genruntimeconfig.cache
+D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\ref\DAL.dll
