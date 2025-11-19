@@ -12,3 +12,18 @@ D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\refint\DAL.dl
 D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.pdb
 D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\DAL.genruntimeconfig.cache
 D:\hoc tap\mon hoc\PRN212\Project\ProjectTeam\DAL\obj\Debug\net9.0\ref\DAL.dll
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\bin\Debug\net9.0\DAL.deps.json
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\bin\Debug\net9.0\DAL.runtimeconfig.json
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\bin\Debug\net9.0\DAL.dll
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\bin\Debug\net9.0\DAL.pdb
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.csproj.AssemblyReference.cache
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.AssemblyInfoInputs.cache
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.AssemblyInfo.cs
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.csproj.CoreCompileInputs.cache
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.sourcelink.json
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.dll
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\refint\DAL.dll
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.pdb
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\DAL.genruntimeconfig.cache
+D:\PRN212 (2)\ProjectTeam\ProjectTeam\DAL\obj\Debug\net9.0\ref\DAL.dll

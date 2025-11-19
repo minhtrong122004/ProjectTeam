@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\BLL\\BLL.csproj": {}
+    "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj": {}
   },
   "projects": {
-    "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\BLL\\BLL.csproj": {
+    "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\BLL\\BLL.csproj",
+        "projectUniqueName": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
         "projectName": "BLL",
-        "projectPath": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\BLL\\BLL.csproj",
+        "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\BLL\\obj\\",
+        "outputPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\DAL.csproj": {
-                "projectPath": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\DAL.csproj"
+              "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj": {
+                "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj"
               }
             }
           }
@@ -64,23 +64,29 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
+              "version": "[9.0.304, 9.0.304]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\DAL.csproj": {
+    "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\DAL.csproj",
+        "projectUniqueName": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
         "projectName": "DAL",
-        "projectPath": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\DAL.csproj",
+        "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-        "outputPath": "D:\\hoc tap\\mon hoc\\PRN212\\Project\\ProjectTeam\\DAL\\obj\\",
+        "outputPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -155,12 +161,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.Net.Sdk.Compilers.Toolset",
+              "version": "[9.0.304, 9.0.304]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

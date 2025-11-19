@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DAL.Entities;
 
@@ -48,11 +49,11 @@ public partial class EvBatterySwapSystemContext : DbContext
 
         return strConn;
     }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(GetConnectionString());
     }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
