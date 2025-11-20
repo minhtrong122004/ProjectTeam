@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using BLL.Services;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,14 @@ namespace ProjectTeam
     /// </summary>
     public partial class LoginWindow : Window
     {
+        private readonly UserService _userService;
         public LoginWindow()
         {
             InitializeComponent();
+            _userService = new UserService();
         }
-        private void BtnLogin_Click(object sender, RoutedEventArgs e)
+     
+        private async void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text.Trim();
             string password = txtPassword.Password.Trim();
@@ -48,42 +52,31 @@ namespace ProjectTeam
 
             try
             {
-                using (var context = new EvBatterySwapSystemContext())
+                var user = await _userService.GetUserAsync(email, password);
+
+                if (user != null)
                 {
-                    var user = context.Users
-                        .Include(u => u.Role)
-                        .FirstOrDefault(u => u.Email == email && u.Password == password);
+                   
+                    // Save to global session
+                    App.CurrentUserId = user.UserId;
+                    App.CurrentUserName = user.FullName;
+                    App.CurrentUserEmail = user.Email;
+                    App.CurrentRoleId = user.RoleId;
+                    App.CurrentRoleName = user.Role?.Name ?? string.Empty;
 
-                    if (user != null)
-                    {
-                        if (user.Status != "Active")
-                        {
-                            MessageBox.Show("Tài khoản của bạn đã bị khóa!", "Lỗi",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
+                    MessageBox.Show($"Đăng nhập thành công!\n\nXin chào, {App.CurrentUserName}\nVai trò: {App.CurrentRoleName}",
+                        "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        // Save to global session
-                        App.CurrentUserId = user.UserId;
-                        App.CurrentUserName = user.FullName;
-                        App.CurrentUserEmail = user.Email;
-                        App.CurrentRoleId = user.RoleId;
-                        App.CurrentRoleName = user.Role.Name;
-
-                        MessageBox.Show($"Đăng nhập thành công!\n\nXin chào, {App.CurrentUserName}\nVai trò: {App.CurrentRoleName}",
-                            "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.Show();
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Email hoặc mật khẩu không đúng!", "Lỗi",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                        txtPassword.Clear();
-                        txtPassword.Focus();
-                    }
+                    MainWindow mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Email hoặc mật khẩu không đúng!", "Lỗi",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    txtPassword.Clear();
+                    txtPassword.Focus();
                 }
             }
             catch (Exception ex)
@@ -93,16 +86,8 @@ namespace ProjectTeam
             }
         }
 
-        private void BtnStaffDemo_Click(object sender, RoutedEventArgs e)
-        {
-            txtEmail.Text = "staff1@vinfast.com";
-            txtPassword.Password = "123456";
-        }
+        
 
-        private void BtnDriverDemo_Click(object sender, RoutedEventArgs e)
-        {
-            txtEmail.Text = "driver1@vinfast.com";
-            txtPassword.Password = "123456";
-        }
+       
     }
 }

@@ -23,6 +23,8 @@ public partial class UserSubscription
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int? SwapLimit { get; set; }
+
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual SubscriptionPlan Plan { get; set; } = null!;
