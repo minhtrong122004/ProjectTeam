@@ -6,212 +6,394 @@
         xmlns:local="clr-namespace:ProjectTeam"
         mc:Ignorable="d"
         Title="VinFast Battery Swap System" 
-        Height="750" Width="1300"
+        Height="800" Width="1400"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized">
+        WindowState="Maximized"
+        Background="#F0F2F5">
+
+    <Window.Resources>
+        <!-- Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0066CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.9"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Menu Button Style -->
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="8,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E8F4FF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#0066CC"/>
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#0066CC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="80"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.Row="0" Background="#0066CC">
+        <!-- Header with Gradient -->
+        <Border Grid.Row="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#0066CC" Offset="0"/>
+                    <GradientStop Color="#0052A3" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" 
+                                BlurRadius="10" 
+                                Opacity="0.3" 
+                                Direction="270"/>
+            </Border.Effect>
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="25,0">
-                    <TextBlock Text="⚡" 
-                               FontSize="28" 
-                               Foreground="White"
-                               Margin="0,0,10,0"
-                               VerticalAlignment="Center"/>
-                    <TextBlock Text="VinFast Battery Swap System" 
-                               FontSize="22" 
-                               FontWeight="Bold" 
-                               Foreground="White"
-                               VerticalAlignment="Center"/>
+                <!-- Logo and Title -->
+                <StackPanel Orientation="Horizontal" 
+                          VerticalAlignment="Center" 
+                          Margin="30,0">
+                    <Border Background="White" 
+                          CornerRadius="10" 
+                          Width="50" 
+                          Height="50" 
+                          Padding="8"
+                          Margin="0,0,15,0">
+                        <TextBlock Text="⚡" 
+                                 FontSize="30" 
+                                 Foreground="#0066CC"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="VinFast Battery Swap" 
+                                 FontSize="24" 
+                                 FontWeight="Bold" 
+                                 Foreground="White"/>
+                        <TextBlock Text="Hệ thống quản lý thay pin thông minh" 
+                                 FontSize="12" 
+                                 Foreground="#E0E7FF"
+                                 Margin="0,2,0,0"/>
+                    </StackPanel>
                 </StackPanel>
 
+                <!-- User Info and Logout -->
                 <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            VerticalAlignment="Center" 
-                            Margin="25,0">
+                          Orientation="Horizontal" 
+                          VerticalAlignment="Center" 
+                          Margin="30,0">
                     <Border Background="#0052A3" 
-                            CornerRadius="5" 
-                            Padding="15,8" 
-                            Margin="0,0,15,0">
+                          CornerRadius="10" 
+                          Padding="20,10" 
+                          Margin="0,0,15,0">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="1" 
+                                            BlurRadius="5" 
+                                            Opacity="0.2"/>
+                        </Border.Effect>
                         <TextBlock x:Name="txtUserInfo" 
-                                   FontSize="14" 
-                                   Foreground="White"
-                                   VerticalAlignment="Center"/>
+                                 FontSize="14" 
+                                 FontWeight="SemiBold"
+                                 Foreground="White"
+                                 VerticalAlignment="Center"/>
                     </Border>
                     <Button Content="🚪 Đăng xuất" 
-                            Width="130" 
-                            Height="40"
-                            Background="#DC3545"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontWeight="Bold"
-                            FontSize="14"
-                            Cursor="Hand"
-                            Click="BtnLogout_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" 
-                                        CornerRadius="5" 
-                                        Padding="15,8">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                                      VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
+                          Width="140" 
+                          Height="45"
+                          Background="#DC3545"
+                          Foreground="White"
+                          BorderThickness="0"
+                          FontWeight="SemiBold"
+                          FontSize="14"
+                          Cursor="Hand"
+                          Click="BtnLogout_Click"
+                          Style="{StaticResource ModernButtonStyle}">
+                        <Button.Effect>
+                            <DropShadowEffect ShadowDepth="1" 
+                                            BlurRadius="5" 
+                                            Opacity="0.3"/>
+                        </Button.Effect>
                     </Button>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Main Content -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="0,10,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="280"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Sidebar -->
             <Border Grid.Column="0" 
-                    Background="#F8F9FA" 
-                    BorderBrush="#DEE2E6" 
-                    BorderThickness="0,0,1,0">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="sidebarMenu" Margin="0,15,0,0"/>
-                </ScrollViewer>
+                    Background="White" 
+                    CornerRadius="15,0,0,0"
+                    Margin="10,0,5,10">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" 
+                                    BlurRadius="15" 
+                                    Opacity="0.1"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Sidebar Header -->
+                    <Border Grid.Row="0" 
+                          Background="#F8FAFC" 
+                          Padding="20,15"
+                          CornerRadius="15,0,0,0">
+                        <TextBlock Text="📋 MENU CHỨC NĂNG" 
+                                 FontSize="13" 
+                                 FontWeight="Bold" 
+                                 Foreground="#64748B"/>
+                    </Border>
+
+                    <!-- Menu Items -->
+                    <ScrollViewer Grid.Row="1" 
+                                VerticalScrollBarVisibility="Auto"
+                                Padding="5">
+                        <StackPanel x:Name="sidebarMenu" Margin="0,10,0,10"/>
+                    </ScrollViewer>
+                </Grid>
             </Border>
 
             <!-- Content Area -->
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <Grid Grid.Column="1" Margin="5,0,10,10">
+                <Border Background="White" 
+                        CornerRadius="15"
+                        Padding="0">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" 
+                                        BlurRadius="15" 
+                                        Opacity="0.1"/>
+                    </Border.Effect>
 
-                <!-- Toolbar -->
-                <Border Grid.Row="0" 
-                        Background="White" 
-                        BorderBrush="#DEE2E6" 
-                        BorderThickness="0,0,0,1" 
-                        Padding="25,15">
-                    <WrapPanel>
-                        <Border BorderBrush="#CCC" BorderThickness="1" CornerRadius="5" Margin="0,0,10,0">
-                            <TextBox x:Name="txtSearch" 
-                                     Width="300" 
-                                     Height="40"
-                                     FontSize="14"
-                                     VerticalContentAlignment="Center"
-                                     Padding="15,0"
-                                     BorderThickness="0"
-                                     Text="Tìm kiếm..."/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Toolbar -->
+                        <Border Grid.Row="0" 
+                              Background="#F8FAFC"
+                              BorderBrush="#E2E8F0" 
+                              BorderThickness="0,0,0,1" 
+                              Padding="25,20"
+                              CornerRadius="15,15,0,0">
+                            <WrapPanel HorizontalAlignment="Left">
+                                <!-- Search Box -->
+                                <Border BorderBrush="#D1D5DB" 
+                                      BorderThickness="1" 
+                                      CornerRadius="8" 
+                                      Margin="0,0,12,0"
+                                      Background="White">
+                                    <TextBox x:Name="txtSearch" 
+                                           Width="320" 
+                                           Height="42"
+                                           FontSize="14"
+                                           Text="Tìm kiếm..."
+                                           Style="{StaticResource ModernTextBoxStyle}"
+                                           BorderThickness="0"/>
+                                </Border>
+
+                                <!-- Search Button -->
+                                <Button Content="🔍 Tìm kiếm" 
+                                      Width="120" 
+                                      Height="42"
+                                      Margin="0,0,12,0"
+                                      Background="#0066CC"
+                                      FontSize="13"
+                                      Padding="15,10"
+                                      Click="BtnSearch_Click"
+                                      Style="{StaticResource ModernButtonStyle}"/>
+
+                                <!-- Add Button -->
+                                <Button x:Name="btnAdd"
+                                      Content="➕ Thêm mới" 
+                                      Width="130" 
+                                      Height="42"
+                                      Margin="0,0,12,0"
+                                      Background="#28A745"
+                                      FontSize="13"
+                                      Padding="15,10"
+                                      Click="BtnAdd_Click"
+                                      Style="{StaticResource ModernButtonStyle}"/>
+
+                                <!-- Refresh Button -->
+                                <Button Content="🔄 Làm mới" 
+                                      Width="120" 
+                                      Height="42"
+                                      Background="#6C757D"
+                                      FontSize="13"
+                                      Padding="15,10"
+                                      Click="BtnRefresh_Click"
+                                      Style="{StaticResource ModernButtonStyle}"/>
+                            </WrapPanel>
                         </Border>
-                        <Button Content="🔍 Tìm kiếm" 
-                                Width="110" 
-                                Height="40"
-                                Margin="0,0,10,0"
-                                Background="#0066CC"
-                                Foreground="White"
-                                BorderThickness="0"
-                                FontWeight="Bold"
-                                FontSize="13"
-                                Cursor="Hand"
-                                Click="BtnSearch_Click">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" 
-                                            CornerRadius="5" Padding="15,8">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                          VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button x:Name="btnAdd"
-                                Content="➕ Thêm mới" 
-                                Width="130" 
-                                Height="40"
-                                Margin="0,0,10,0"
-                                Background="#28A745"
-                                Foreground="White"
-                                BorderThickness="0"
-                                FontWeight="Bold"
-                                FontSize="13"
-                                Cursor="Hand"
-                                Click="BtnAdd_Click">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" 
-                                            CornerRadius="5" Padding="15,8">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                          VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                        <Button Content="🔄 Làm mới" 
-                                Width="120" 
-                                Height="40"
-                                Background="#6C757D"
-                                Foreground="White"
-                                BorderThickness="0"
-                                FontWeight="Bold"
-                                FontSize="13"
-                                Cursor="Hand"
-                                Click="BtnRefresh_Click">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" 
-                                            CornerRadius="5" Padding="15,8">
-                                        <ContentPresenter HorizontalAlignment="Center" 
-                                                          VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </WrapPanel>
-                </Border>
 
-                <!-- Data Grid -->
-                <DataGrid x:Name="dataGrid" 
-                          Grid.Row="1"
-                          Margin="25"
-                          AutoGenerateColumns="True"
-                          IsReadOnly="True"
-                          SelectionMode="Single"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          GridLinesVisibility="Horizontal"
-                          HeadersVisibility="Column"
-                          RowHeight="45"
-                          AlternatingRowBackground="#F8F9FA"
-                          MouseDoubleClick="DataGrid_MouseDoubleClick">
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Background" Value="#0066CC"/>
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="FontWeight" Value="Bold"/>
-                            <Setter Property="FontSize" Value="13"/>
-                            <Setter Property="Padding" Value="12"/>
-                            <Setter Property="Height" Value="45"/>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="Padding" Value="12,0"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                        </Style>
-                    </DataGrid.CellStyle>
-                </DataGrid>
+                        <!-- Data Grid -->
+                        <Border Grid.Row="1" Padding="20">
+                            <DataGrid x:Name="dataGrid" 
+                                    AutoGenerateColumns="True"
+                                    IsReadOnly="True"
+                                    SelectionMode="Single"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
+                                    GridLinesVisibility="None"
+                                    HeadersVisibility="Column"
+                                    RowHeight="50"
+                                    Background="White"
+                                    BorderThickness="0"
+                                    MouseDoubleClick="DataGrid_MouseDoubleClick">
+
+                                <!-- Column Header Style -->
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#F1F5F9"/>
+                                        <Setter Property="Foreground" Value="#1E293B"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Padding" Value="15,12"/>
+                                        <Setter Property="Height" Value="50"/>
+                                        <Setter Property="BorderThickness" Value="0,0,0,2"/>
+                                        <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+
+                                <!-- Row Style -->
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                        <Setter Property="BorderBrush" Value="#F1F5F9"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#F8FAFC"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="#E0F2FE"/>
+                                                <Setter Property="Foreground" Value="#0C4A6E"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+
+                                <!-- Cell Style -->
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Padding" Value="15,0"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="#334155"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="DataGridCell">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                          Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="Foreground" Value="#0C4A6E"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                            </DataGrid>
+                        </Border>
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
     </Grid>

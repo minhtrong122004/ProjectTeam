@@ -3063,11 +3063,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
+      "projectUniqueName": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
       "projectName": "BLL",
-      "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
+      "projectPath": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\BLL\\BLL.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\BLL\\obj\\",
+      "outputPath": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\BLL\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -3088,8 +3088,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj": {
-              "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj"
+            "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj": {
+              "projectPath": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj"
             }
           }
         }

@@ -10,24 +10,42 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DAL.Entities;
+using BLL.Services;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ProjectTeam
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private string currentModule = "";
+
+        // Services
+        private readonly BatteryService _batteryService;
+        private readonly ReservationService _reservationService;
+        private readonly SwapTransactionService _swapTransactionService;
+        private readonly UserService _userService;
+        private readonly UserSubcriptionService _userSubscriptionService;
+        private readonly VehicleService _vehicleService;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // Initialize services
+            _batteryService = new BatteryService();
+            _reservationService = new ReservationService();
+            _swapTransactionService = new SwapTransactionService();
+            _userService = new UserService();
+            _userSubscriptionService = new UserSubcriptionService();
+            _vehicleService = new VehicleService();
+
             LoadUserInfo();
             SetupMenuByRole();
         }
+
         private void LoadUserInfo()
         {
             txtUserInfo.Text = $"👤 {App.CurrentUserName} ({App.CurrentRoleName})";
@@ -59,7 +77,6 @@ namespace ProjectTeam
                 AddMenuItem("🔋 Danh sách Pin", "BATTERIES");
             }
 
-            // Load first menu
             if (sidebarMenu.Children.Count > 0)
             {
                 var firstButton = sidebarMenu.Children[0] as Button;
@@ -93,7 +110,6 @@ namespace ProjectTeam
             Button btn = sender as Button;
             currentModule = btn.Tag.ToString();
 
-            // Highlight selected
             foreach (var child in sidebarMenu.Children)
             {
                 if (child is Button b)
@@ -108,7 +124,7 @@ namespace ProjectTeam
             LoadData();
         }
 
-        private void LoadData()
+        private async void LoadData()
         {
             try
             {
@@ -145,18 +161,16 @@ namespace ProjectTeam
                             break;
 
                         case "BATTERIES":
-                            data = context.Batteries
-                                .Include(b => b.Station)
-                                .Include(b => b.Model)
-                                .Select(b => new
-                                {
-                                    b.BatteryId,
-                                    Tram = b.Station.Name,
-                                    ModelXe = b.Model.Name,
-                                    CongSuat = b.CapacityKw + " kW",
-                                    TrangThai = b.Status,
-                                    SucKhoe = b.Soh + "%"
-                                }).ToList();
+                            var batteries = await _batteryService.GetAllAsync();
+                            data = batteries.Select(b => new
+                            {
+                                b.BatteryId,
+                                Tram = b.Station?.Name ?? "N/A",
+                                ModelXe = b.Model?.Name ?? "N/A",
+                                CongSuat = b.CapacityKw + " kW",
+                                TrangThai = b.Status,
+                                SucKhoe = b.Soh + "%"
+                            }).ToList();
                             break;
 
                         case "VEHICLES":
@@ -185,20 +199,17 @@ namespace ProjectTeam
                             break;
 
                         case "RESERVATIONS":
-                            data = context.Reservations
-                                .Include(r => r.User)
-                                .Include(r => r.Station)
-                                .Include(r => r.Vehicle)
-                                .Select(r => new
-                                {
-                                    r.ReservationId,
-                                    NguoiDat = r.User.FullName,
-                                    Tram = r.Station.Name,
-                                    Xe = r.Vehicle.Vin,
-                                    ThoiGianBatDau = r.StartTime,
-                                    ThoiGianKetThuc = r.EndTime,
-                                    TrangThai = r.Status
-                                }).ToList();
+                            var allReservations = await _reservationService.GetAllReservationsAsync();
+                            data = allReservations.Select(r => new
+                            {
+                                r.ReservationId,
+                                NguoiDat = r.User?.FullName ?? "N/A",
+                                Tram = r.Station?.Name ?? "N/A",
+                                Xe = r.Vehicle?.Vin ?? "N/A",
+                                ThoiGianBatDau = r.StartTime,
+                                ThoiGianKetThuc = r.EndTime,
+                                TrangThai = r.Status
+                            }).ToList();
                             break;
 
                         case "SWAP_TRANSACTIONS":
@@ -206,13 +217,15 @@ namespace ProjectTeam
                                 .Include(st => st.User)
                                 .Include(st => st.Station)
                                 .Include(st => st.Staff)
+                                .Include(st => st.Vehicle)
                                 .Select(st => new
                                 {
                                     st.SwapId,
                                     TaiXe = st.User.FullName,
                                     Tram = st.Station.Name,
+                                    Xe = st.Vehicle.Vin,
                                     ThoiGian = st.SwapTime,
-                                    NhanVien = st.Staff.FullName,
+                                    NhanVien = st.Staff != null ? st.Staff.FullName : "Chưa có",
                                     TrangThai = st.Status
                                 }).ToList();
                             break;
@@ -257,6 +270,7 @@ namespace ProjectTeam
                                     GoiDangKy = us.Plan.Name,
                                     NgayBatDau = us.StartDate,
                                     NgayKetThuc = us.EndDate,
+                                    SoLanConLai = us.SwapLimit,
                                     TrangThai = us.Status
                                 }).ToList();
                             break;
@@ -278,19 +292,16 @@ namespace ProjectTeam
                             break;
 
                         case "MY_RESERVATIONS":
-                            data = context.Reservations
-                                .Include(r => r.Station)
-                                .Include(r => r.Vehicle)
-                                .Where(r => r.UserId == App.CurrentUserId)
-                                .Select(r => new
-                                {
-                                    r.ReservationId,
-                                    Tram = r.Station.Name,
-                                    Xe = r.Vehicle.Vin,
-                                    ThoiGianBatDau = r.StartTime,
-                                    ThoiGianKetThuc = r.EndTime,
-                                    TrangThai = r.Status
-                                }).ToList();
+                            var myReservations = await _reservationService.GetReservationsByUserIdAsync(App.CurrentUserId);
+                            data = myReservations.Select(r => new
+                            {
+                                r.ReservationId,
+                                Tram = r.Station?.Name ?? "N/A",
+                                Xe = r.Vehicle?.Vin ?? "N/A",
+                                ThoiGianBatDau = r.StartTime,
+                                ThoiGianKetThuc = r.EndTime,
+                                TrangThai = r.Status
+                            }).ToList();
                             break;
 
                         case "MY_SWAPS":
@@ -305,7 +316,7 @@ namespace ProjectTeam
                                     Tram = st.Station.Name,
                                     Xe = st.Vehicle.Vin,
                                     ThoiGian = st.SwapTime,
-                                    NhanVien = st.Staff.FullName,
+                                    NhanVien = st.Staff != null ? st.Staff.FullName : "Chưa có",
                                     TrangThai = st.Status
                                 }).ToList();
                             break;
@@ -322,6 +333,7 @@ namespace ProjectTeam
                                     Xe = us.Vehicle.Vin,
                                     NgayBatDau = us.StartDate,
                                     NgayKetThuc = us.EndDate,
+                                    SoLanConLai = us.SwapLimit,
                                     TrangThai = us.Status
                                 }).ToList();
                             break;
@@ -340,7 +352,7 @@ namespace ProjectTeam
                             break;
                     }
 
-                    dynamic dataSource = null;
+                    dataGrid.ItemsSource = data as System.Collections.IEnumerable;
                 }
             }
             catch (Exception ex)

@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using DAL.Entities;
+using BLL.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProjectTeam
 {
-    /// <summary>
-    /// Interaction logic for DetailWindow.xaml
-    /// </summary>
     public partial class DetailWindow : Window
     {
         private string module;
@@ -28,9 +20,26 @@ namespace ProjectTeam
         private Dictionary<string, ComboBox> comboFields = new Dictionary<string, ComboBox>();
         private Dictionary<string, DatePicker> dateFields = new Dictionary<string, DatePicker>();
 
+        // Services
+        private readonly BatteryService _batteryService;
+        private readonly ReservationService _reservationService;
+        private readonly SwapTransactionService _swapTransactionService;
+        private readonly UserService _userService;
+        private readonly UserSubcriptionService _userSubscriptionService;
+        private readonly VehicleService _vehicleService;
+
         public DetailWindow(string module, object selectedItem)
         {
             InitializeComponent();
+
+            // Initialize services
+            _batteryService = new BatteryService();
+            _reservationService = new ReservationService();
+            _swapTransactionService = new SwapTransactionService();
+            _userService = new UserService();
+            _userSubscriptionService = new UserSubcriptionService();
+            _vehicleService = new VehicleService();
+
             this.module = module;
             this.selectedItem = selectedItem;
             this.isAddMode = selectedItem == null;
@@ -61,14 +70,18 @@ namespace ProjectTeam
                 case "USERS": return "User";
                 case "STATIONS": return "Station";
                 case "BATTERIES": return "Battery";
-                case "VEHICLES": return "Vehicle";
+                case "VEHICLES":
+                case "MY_VEHICLES": return "Vehicle";
                 case "VEHICLE_MODELS": return "Vehicle Model";
                 case "RESERVATIONS":
                 case "MY_RESERVATIONS": return "Reservation";
-                case "SWAP_TRANSACTIONS": return "Swap Transaction";
-                case "PAYMENTS": return "Payment";
+                case "SWAP_TRANSACTIONS":
+                case "MY_SWAPS": return "Swap Transaction";
+                case "PAYMENTS":
+                case "MY_PAYMENTS": return "Payment";
                 case "SUBSCRIPTION_PLANS": return "Subscription Plan";
-                case "USER_SUBSCRIPTIONS": return "User Subscription";
+                case "USER_SUBSCRIPTIONS":
+                case "MY_SUBSCRIPTIONS": return "User Subscription";
                 default: return module;
             }
         }
@@ -92,6 +105,7 @@ namespace ProjectTeam
                     BuildBatteryForm();
                     break;
                 case "VEHICLES":
+                case "MY_VEHICLES":
                     BuildVehicleForm();
                     break;
                 case "VEHICLE_MODELS":
@@ -103,6 +117,14 @@ namespace ProjectTeam
                     break;
                 case "SUBSCRIPTION_PLANS":
                     BuildSubscriptionPlanForm();
+                    break;
+                case "USER_SUBSCRIPTIONS":
+                case "MY_SUBSCRIPTIONS":
+                    BuildUserSubscriptionForm();
+                    break;
+                case "SWAP_TRANSACTIONS":
+                case "MY_SWAPS":
+                    BuildSwapTransactionForm();
                     break;
                 default:
                     formPanel.Children.Add(new TextBlock
@@ -122,7 +144,10 @@ namespace ProjectTeam
             AddTextField("Họ tên:", "FullName", GetPropertyValue("HoTen"));
             AddTextField("Email:", "Email", GetPropertyValue("Email"));
             AddTextField("Điện thoại:", "Phone", GetPropertyValue("DienThoai"));
-            AddTextField("Mật khẩu:", "Password", "");
+            if (isAddMode)
+            {
+                AddTextField("Mật khẩu:", "Password", "");
+            }
             AddComboField("Vai trò:", "RoleId", GetRoles(), GetPropertyValue("VaiTro"));
             AddComboField("Trạng thái:", "Status", new List<string> { "Active", "Inactive" },
                 GetPropertyValue("TrangThai")?.ToString() ?? "Active");
@@ -142,17 +167,27 @@ namespace ProjectTeam
             AddComboField("Trạm:", "StationId", GetStations(), GetPropertyValue("Tram"));
             AddComboField("Model xe:", "ModelId", GetVehicleModels(), GetPropertyValue("ModelXe"));
             AddTextField("Công suất (kW):", "CapacityKw", GetPropertyValue("CongSuat")?.ToString().Replace(" kW", ""));
-            AddComboField("Trạng thái:", "Status", new List<string> { "Full", "Charging", "Low", "Maintenance" },
+            AddComboField("Trạng thái:", "Status",
+                new List<string> { "Available", "InUse", "Charging", "Maintenance", "Decommissioned" },
                 GetPropertyValue("TrangThai")?.ToString() ?? "Charging");
             AddTextField("Sức khỏe (%):", "Soh", GetPropertyValue("SucKhoe")?.ToString().Replace("%", ""));
         }
 
         private void BuildVehicleForm()
         {
-            AddComboField("Chủ xe:", "UserId", GetDrivers(), GetPropertyValue("ChuXe"));
-            AddTextField("VIN:", "Vin", GetPropertyValue("Vin"));
-            AddComboField("Model:", "ModelId", GetVehicleModels(), GetPropertyValue("Model"));
-            AddComboField("Pin hiện tại:", "CurrentBatteryId", GetAvailableBatteries(), GetPropertyValue("PinHienTai"));
+            if (module == "MY_VEHICLES")
+            {
+                // Driver chỉ thêm xe cho chính mình
+                AddTextField("VIN:", "Vin", GetPropertyValue("Vin"));
+                AddComboField("Model:", "ModelId", GetVehicleModels(), GetPropertyValue("Model"));
+            }
+            else
+            {
+                AddComboField("Chủ xe:", "UserId", GetDrivers(), GetPropertyValue("ChuXe"));
+                AddTextField("VIN:", "Vin", GetPropertyValue("Vin"));
+                AddComboField("Model:", "ModelId", GetVehicleModels(), GetPropertyValue("Model"));
+                AddComboField("Pin hiện tại:", "CurrentBatteryId", GetAvailableBatteries(), GetPropertyValue("PinHienTai"));
+            }
         }
 
         private void BuildVehicleModelForm()
@@ -163,20 +198,121 @@ namespace ProjectTeam
 
         private void BuildReservationForm()
         {
-            if (App.IsDriver)
+            if (isAddMode)
             {
-                AddComboField("Xe:", "VehicleId", GetMyVehicles(), GetPropertyValue("Xe"));
+                // Chỉ cho phép tạo mới từ Driver
+                if (App.IsDriver)
+                {
+                    AddComboField("Xe:", "VehicleId", GetMyVehicles(), null);
+                    AddComboField("Trạm:", "StationId", GetStations(), null);
+                    AddDateTimePicker("Thời gian đặt:", "StartTime", DateTime.Now);
+                }
+                else
+                {
+                    MessageBox.Show("Staff không thể tạo Reservation mới. Chỉ có thể cập nhật!",
+                        "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    btnSave.IsEnabled = false;
+                }
             }
             else
             {
-                AddComboField("Người đặt:", "UserId", GetDrivers(), GetPropertyValue("NguoiDat"));
-                AddComboField("Xe:", "VehicleId", GetAllVehicles(), GetPropertyValue("Xe"));
+                // Chỉ hiển thị thông tin
+                AddReadOnlyField("Người đặt:", GetPropertyValue("NguoiDat")?.ToString() ?? "N/A");
+                AddReadOnlyField("Xe:", GetPropertyValue("Xe")?.ToString() ?? "N/A");
+                AddReadOnlyField("Trạm:", GetPropertyValue("Tram")?.ToString() ?? "N/A");
+                AddReadOnlyField("Thời gian bắt đầu:", GetPropertyValue("ThoiGianBatDau")?.ToString() ?? "N/A");
+                AddReadOnlyField("Thời gian kết thúc:", GetPropertyValue("ThoiGianKetThuc")?.ToString() ?? "N/A");
+
+                // Staff có thể cập nhật trạng thái
+                if (App.IsStaff)
+                {
+                    AddComboField("Trạng thái:", "Status",
+                        new List<string> { "Pending", "Confirmed", "Completed", "Cancelled" },
+                        GetPropertyValue("TrangThai")?.ToString() ?? "Pending");
+                }
+                else
+                {
+                    AddReadOnlyField("Trạng thái:", GetPropertyValue("TrangThai")?.ToString() ?? "N/A");
+                    btnSave.IsEnabled = false;
+                }
             }
-            AddComboField("Trạm:", "StationId", GetStations(), GetPropertyValue("Tram"));
-            AddDateTimePicker("Thời gian bắt đầu:", "StartTime", GetPropertyValue("ThoiGianBatDau"));
-            AddDateTimePicker("Thời gian kết thúc:", "EndTime", GetPropertyValue("ThoiGianKetThuc"));
-            AddComboField("Trạng thái:", "Status", new List<string> { "Pending", "Confirmed", "Completed", "Cancelled" },
-                GetPropertyValue("TrangThai")?.ToString() ?? "Pending");
+        }
+
+        private void BuildUserSubscriptionForm()
+        {
+            if (isAddMode)
+            {
+                if (App.IsDriver)
+                {
+                    AddComboField("Xe:", "VehicleId", GetMyVehicles(), null);
+                    AddComboField("Gói đăng ký:", "PlanId", GetSubscriptionPlans(), null);
+                }
+                else
+                {
+                    AddComboField("Người dùng:", "UserId", GetDrivers(), null);
+                    AddComboField("Xe:", "VehicleId", GetAllVehicles(), null);
+                    AddComboField("Gói đăng ký:", "PlanId", GetSubscriptionPlans(), null);
+                }
+            }
+            else
+            {
+                AddReadOnlyField("Người dùng:", GetPropertyValue("NguoiDung")?.ToString() ?? "N/A");
+                AddReadOnlyField("Xe:", GetPropertyValue("Xe")?.ToString() ?? "N/A");
+                AddReadOnlyField("Gói đăng ký:", GetPropertyValue("GoiDangKy")?.ToString() ?? "N/A");
+                AddReadOnlyField("Ngày bắt đầu:", GetPropertyValue("NgayBatDau")?.ToString() ?? "N/A");
+                AddReadOnlyField("Ngày kết thúc:", GetPropertyValue("NgayKetThuc")?.ToString() ?? "N/A");
+                AddReadOnlyField("Số lần còn lại:", GetPropertyValue("SoLanConLai")?.ToString() ?? "N/A");
+
+                if (App.IsStaff)
+                {
+                    AddComboField("Trạng thái:", "Status",
+                        new List<string> { "Pending", "Active", "Expired", "Cancelled" },
+                        GetPropertyValue("TrangThai")?.ToString() ?? "Pending");
+                }
+                else
+                {
+                    AddReadOnlyField("Trạng thái:", GetPropertyValue("TrangThai")?.ToString() ?? "N/A");
+                    btnSave.IsEnabled = false;
+                }
+            }
+        }
+
+        private void BuildSwapTransactionForm()
+        {
+            if (isAddMode)
+            {
+                // Chỉ Staff mới có thể tạo Swap Transaction
+                if (App.IsStaff)
+                {
+                    AddComboField("Reservation:", "ReservationId", GetConfirmedReservations(), null);
+                }
+                else
+                {
+                    MessageBox.Show("Chỉ Staff mới có thể tạo giao dịch thay pin!",
+                        "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    btnSave.IsEnabled = false;
+                }
+            }
+            else
+            {
+                AddReadOnlyField("Tài xế:", GetPropertyValue("TaiXe")?.ToString() ?? "N/A");
+                AddReadOnlyField("Trạm:", GetPropertyValue("Tram")?.ToString() ?? "N/A");
+                AddReadOnlyField("Xe:", GetPropertyValue("Xe")?.ToString() ?? "N/A");
+                AddReadOnlyField("Thời gian:", GetPropertyValue("ThoiGian")?.ToString() ?? "N/A");
+                AddReadOnlyField("Nhân viên:", GetPropertyValue("NhanVien")?.ToString() ?? "N/A");
+
+                if (App.IsStaff)
+                {
+                    AddComboField("Trạng thái:", "Status",
+                        new List<string> { "Pending", "Completed", "Failed" },
+                        GetPropertyValue("TrangThai")?.ToString() ?? "Pending");
+                }
+                else
+                {
+                    AddReadOnlyField("Trạng thái:", GetPropertyValue("TrangThai")?.ToString() ?? "N/A");
+                    btnSave.IsEnabled = false;
+                }
+            }
         }
 
         private void BuildSubscriptionPlanForm()
@@ -187,6 +323,38 @@ namespace ProjectTeam
             AddTextField("Giới hạn đổi pin:", "SwapLimit", GetPropertyValue("GioiHanDoiPin"));
             AddComboField("Ưu tiên đặt chỗ:", "PriorityBooking",
                 new List<string> { "Có", "Không" }, GetPropertyValue("UuTienDatCho")?.ToString() ?? "Không");
+        }
+
+        private void AddReadOnlyField(string label, string value)
+        {
+            TextBlock lbl = new TextBlock
+            {
+                Text = label,
+                FontWeight = FontWeights.Bold,
+                FontSize = 13,
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+            formPanel.Children.Add(lbl);
+
+            Border border = new Border
+            {
+                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0")),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(5),
+                Margin = new Thickness(0, 0, 0, 15),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F5F5F5"))
+            };
+
+            TextBlock txt = new TextBlock
+            {
+                Text = value,
+                FontSize = 13,
+                Padding = new Thickness(12),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            border.Child = txt;
+            formPanel.Children.Add(border);
         }
 
         private void AddTextField(string label, string propertyName, object value)
@@ -349,12 +517,11 @@ namespace ProjectTeam
         private object GetPropertyValue(string propertyName)
         {
             if (selectedItem == null) return null;
-
             var prop = selectedItem.GetType().GetProperty(propertyName);
             return prop?.GetValue(selectedItem);
         }
 
-        // Helper methods to get data for ComboBoxes
+        // Helper methods
         private Dictionary<int, string> GetRoles()
         {
             using (var context = new EvBatterySwapSystemContext())
@@ -367,7 +534,9 @@ namespace ProjectTeam
         {
             using (var context = new EvBatterySwapSystemContext())
             {
-                return context.Stations.ToDictionary(s => s.StationId, s => s.Name);
+                return context.Stations
+                    .Where(s => s.Status == "Active")
+                    .ToDictionary(s => s.StationId, s => s.Name);
             }
         }
 
@@ -384,7 +553,7 @@ namespace ProjectTeam
             using (var context = new EvBatterySwapSystemContext())
             {
                 return context.Users
-                    .Where(u => u.Role.Name == "Driver")
+                    .Where(u => u.Role.Name == "Driver" && u.Status == "Active")
                     .Include(u => u.Role)
                     .ToDictionary(u => u.UserId, u => u.FullName);
             }
@@ -396,7 +565,7 @@ namespace ProjectTeam
             {
                 var dict = new Dictionary<int, string> { { 0, "Không có" } };
                 var batteries = context.Batteries
-                    .Where(b => b.Status == "Full")
+                    .Where(b => b.Status == "Available")
                     .ToDictionary(b => b.BatteryId, b => $"Battery #{b.BatteryId} - {b.Soh}%");
 
                 foreach (var b in batteries)
@@ -424,48 +593,58 @@ namespace ProjectTeam
             }
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private Dictionary<int, string> GetSubscriptionPlans()
+        {
+            using (var context = new EvBatterySwapSystemContext())
+            {
+                return context.SubscriptionPlans
+                    .ToDictionary(sp => sp.PlanId, sp => $"{sp.Name} - {sp.Price:N0} VND");
+            }
+        }
+
+        private Dictionary<int, string> GetConfirmedReservations()
+        {
+            using (var context = new EvBatterySwapSystemContext())
+            {
+                return context.Reservations
+                    .Include(r => r.User)
+                    .Include(r => r.Vehicle)
+                    .Where(r => r.Status == "Confirmed")
+                    .ToDictionary(r => r.ReservationId,
+                        r => $"#{r.ReservationId} - {r.User.FullName} - {r.Vehicle.Vin}");
+            }
+        }
+
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (var context = new EvBatterySwapSystemContext())
+                switch (module)
                 {
-                    switch (module)
-                    {
-                        case "USERS":
-                            SaveUser(context);
-                            break;
-                        case "STATIONS":
-                            SaveStation(context);
-                            break;
-                        case "BATTERIES":
-                            SaveBattery(context);
-                            break;
-                        case "VEHICLES":
-                            SaveVehicle(context);
-                            break;
-                        case "VEHICLE_MODELS":
-                            SaveVehicleModel(context);
-                            break;
-                        case "RESERVATIONS":
-                        case "MY_RESERVATIONS":
-                            SaveReservation(context);
-                            break;
-                        case "SUBSCRIPTION_PLANS":
-                            SaveSubscriptionPlan(context);
-                            break;
-                        default:
-                            MessageBox.Show("Chức năng lưu đang được phát triển!",
-                                "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                            return;
-                    }
-
-                    context.SaveChanges();
-                    MessageBox.Show("Lưu thành công!", "Thành công",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                    this.DialogResult = true;
-                    this.Close();
+                    case "VEHICLES":
+                    case "MY_VEHICLES":
+                        await SaveVehicleAsync();
+                        break;
+                    case "RESERVATIONS":
+                    case "MY_RESERVATIONS":
+                        await SaveReservationAsync();
+                        break;
+                    case "USER_SUBSCRIPTIONS":
+                    case "MY_SUBSCRIPTIONS":
+                        await SaveUserSubscriptionAsync();
+                        break;
+                    case "SWAP_TRANSACTIONS":
+                        await SaveSwapTransactionAsync();
+                        break;
+                    default:
+                        SaveWithContext();
+                        break;
                 }
+
+                MessageBox.Show("Lưu thành công!", "Thành công",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                this.DialogResult = true;
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -474,12 +653,129 @@ namespace ProjectTeam
             }
         }
 
+        private async Task SaveVehicleAsync()
+        {
+            if (isAddMode)
+            {
+                int userId = module == "MY_VEHICLES" ? App.CurrentUserId : GetComboValue("UserId");
+                int modelId = GetComboValue("ModelId");
+                string vin = inputFields["Vin"].Text.Trim();
+
+                await _vehicleService.RegisterVehicleAsync(userId, modelId, vin);
+            }
+            else
+            {
+                using (var context = new EvBatterySwapSystemContext())
+                {
+                    int vehicleId = Convert.ToInt32(GetPropertyValue("VehicleId"));
+                    var vehicle = await context.Vehicles.FindAsync(vehicleId);
+
+                    if (module != "MY_VEHICLES")
+                    {
+                        vehicle.UserId = GetComboValue("UserId");
+                        int batteryId = GetComboValue("CurrentBatteryId");
+                        vehicle.CurrentBatteryId = batteryId == 0 ? null : batteryId;
+                    }
+
+                    vehicle.ModelId = GetComboValue("ModelId");
+                    vehicle.Vin = inputFields["Vin"].Text.Trim();
+
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+
+        private async Task SaveReservationAsync()
+        {
+            if (isAddMode)
+            {
+                int vehicleId = GetComboValue("VehicleId");
+                int stationId = GetComboValue("StationId");
+                DateTime startTime = dateFields["StartTime"].SelectedDate ?? DateTime.Now;
+
+                await _reservationService.BookReservationAsync(
+                    App.CurrentUserId, vehicleId, stationId, startTime);
+            }
+            else
+            {
+                int reservationId = Convert.ToInt32(GetPropertyValue("ReservationId"));
+                string status = GetComboString("Status");
+
+                await _reservationService.UpdateStatusReservationAsync(reservationId, status);
+            }
+        }
+
+        private async Task SaveUserSubscriptionAsync()
+        {
+            if (isAddMode)
+            {
+                int userId = App.IsDriver ? App.CurrentUserId : GetComboValue("UserId");
+                int vehicleId = GetComboValue("VehicleId");
+                int planId = GetComboValue("PlanId");
+
+                await _userSubscriptionService.RegisterSubscriptionAsync(userId, vehicleId, planId);
+            }
+            else
+            {
+                int subscriptionId = Convert.ToInt32(GetPropertyValue("SubscriptionId"));
+                string status = GetComboString("Status");
+
+                await _userSubscriptionService.UpdateStatusUserSubcription(subscriptionId, status);
+            }
+        }
+
+        private async Task SaveSwapTransactionAsync()
+        {
+            if (isAddMode)
+            {
+                int reservationId = GetComboValue("ReservationId");
+                await _swapTransactionService.CreateSwapTransactionByReservationAsync(reservationId);
+            }
+            else
+            {
+                int swapId = Convert.ToInt32(GetPropertyValue("SwapId"));
+                string status = GetComboString("Status");
+
+                await _swapTransactionService.UpdateStatusByUserAsync(App.CurrentUserId, swapId, status);
+            }
+        }
+
+        private void SaveWithContext()
+        {
+            using (var context = new EvBatterySwapSystemContext())
+            {
+                switch (module)
+                {
+                    case "USERS":
+                        SaveUser(context);
+                        break;
+                    case "STATIONS":
+                        SaveStation(context);
+                        break;
+                    case "BATTERIES":
+                        SaveBattery(context);
+                        break;
+                    case "VEHICLE_MODELS":
+                        SaveVehicleModel(context);
+                        break;
+                    case "SUBSCRIPTION_PLANS":
+                        SaveSubscriptionPlan(context);
+                        break;
+                }
+                context.SaveChanges();
+            }
+        }
+
         private void SaveUser(EvBatterySwapSystemContext context)
         {
             User user;
             if (isAddMode)
             {
-                user = new User();
+                user = new User
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    Password = inputFields["Password"].Text
+                };
                 context.Users.Add(user);
             }
             else
@@ -491,16 +787,9 @@ namespace ProjectTeam
             user.FullName = inputFields["FullName"].Text;
             user.Email = inputFields["Email"].Text;
             user.Phone = inputFields["Phone"].Text;
-            if (!string.IsNullOrEmpty(inputFields["Password"].Text))
-                user.Password = inputFields["Password"].Text;
             user.RoleId = GetComboValue("RoleId");
             user.Status = GetComboString("Status");
-            user.UpdatedAt = DateTime.Now;
-            if (isAddMode)
-            {
-                user.CreatedAt = DateTime.Now;
-                user.Password = "123456"; // Default password
-            }
+            user.UpdatedAt = DateTime.UtcNow;
         }
 
         private void SaveStation(EvBatterySwapSystemContext context)
@@ -544,27 +833,6 @@ namespace ProjectTeam
             battery.Soh = double.Parse(inputFields["Soh"].Text);
         }
 
-        private void SaveVehicle(EvBatterySwapSystemContext context)
-        {
-            Vehicle vehicle;
-            if (isAddMode)
-            {
-                vehicle = new Vehicle();
-                context.Vehicles.Add(vehicle);
-            }
-            else
-            {
-                int vehicleId = Convert.ToInt32(GetPropertyValue("VehicleId"));
-                vehicle = context.Vehicles.Find(vehicleId);
-            }
-
-            vehicle.UserId = GetComboValue("UserId");
-            vehicle.Vin = inputFields["Vin"].Text;
-            vehicle.ModelId = GetComboValue("ModelId");
-            int batteryId = GetComboValue("CurrentBatteryId");
-            vehicle.CurrentBatteryId = batteryId == 0 ? null : batteryId;
-        }
-
         private void SaveVehicleModel(EvBatterySwapSystemContext context)
         {
             VehicleModel model;
@@ -581,40 +849,6 @@ namespace ProjectTeam
 
             model.Name = inputFields["Name"].Text;
             model.BatteryName = inputFields["BatteryName"].Text;
-        }
-
-        private void SaveReservation(EvBatterySwapSystemContext context)
-        {
-            Reservation reservation;
-            if (isAddMode)
-            {
-                reservation = new Reservation();
-                context.Reservations.Add(reservation);
-            }
-            else
-            {
-                int reservationId = Convert.ToInt32(GetPropertyValue("ReservationId"));
-                reservation = context.Reservations.Find(reservationId);
-            }
-
-            if (App.IsDriver)
-            {
-                reservation.UserId = App.CurrentUserId;
-            }
-            else
-            {
-                reservation.UserId = GetComboValue("UserId");
-            }
-
-            reservation.VehicleId = GetComboValue("VehicleId");
-            reservation.StationId = GetComboValue("StationId");
-            reservation.StartTime = dateFields["StartTime"].SelectedDate ?? DateTime.Now;
-            reservation.EndTime = dateFields["EndTime"].SelectedDate ?? DateTime.Now.AddHours(1);
-            reservation.Status = GetComboString("Status");
-            reservation.UpdatedAt = DateTime.Now;
-
-            if (isAddMode)
-                reservation.CreatedAt = DateTime.Now;
         }
 
         private void SaveSubscriptionPlan(EvBatterySwapSystemContext context)
@@ -665,7 +899,7 @@ namespace ProjectTeam
             return "";
         }
 
-        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        private async void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Bạn có chắc muốn xóa?", "Xác nhận",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -674,71 +908,89 @@ namespace ProjectTeam
             {
                 try
                 {
-                    using (var context = new EvBatterySwapSystemContext())
+                    switch (module)
                     {
-                        switch (module)
-                        {
-                            case "USERS":
-                                int userId = Convert.ToInt32(GetPropertyValue("UserId"));
-                                var user = context.Users.Find(userId);
-                                if (user != null) context.Users.Remove(user);
-                                break;
-
-                            case "STATIONS":
-                                int stationId = Convert.ToInt32(GetPropertyValue("StationId"));
-                                var station = context.Stations.Find(stationId);
-                                if (station != null) context.Stations.Remove(station);
-                                break;
-
-                            case "BATTERIES":
-                                int batteryId = Convert.ToInt32(GetPropertyValue("BatteryId"));
-                                var battery = context.Batteries.Find(batteryId);
-                                if (battery != null) context.Batteries.Remove(battery);
-                                break;
-
-                            case "VEHICLES":
-                                int vehicleId = Convert.ToInt32(GetPropertyValue("VehicleId"));
-                                var vehicle = context.Vehicles.Find(vehicleId);
-                                if (vehicle != null) context.Vehicles.Remove(vehicle);
-                                break;
-
-                            case "VEHICLE_MODELS":
-                                int modelId = Convert.ToInt32(GetPropertyValue("ModelId"));
-                                var model = context.VehicleModels.Find(modelId);
-                                if (model != null) context.VehicleModels.Remove(model);
-                                break;
-
-                            case "RESERVATIONS":
-                            case "MY_RESERVATIONS":
-                                int reservationId = Convert.ToInt32(GetPropertyValue("ReservationId"));
-                                var reservation = context.Reservations.Find(reservationId);
-                                if (reservation != null) context.Reservations.Remove(reservation);
-                                break;
-
-                            case "SUBSCRIPTION_PLANS":
-                                int planId = Convert.ToInt32(GetPropertyValue("PlanId"));
-                                var plan = context.SubscriptionPlans.Find(planId);
-                                if (plan != null) context.SubscriptionPlans.Remove(plan);
-                                break;
-
-                            default:
-                                MessageBox.Show("Chức năng xóa đang được phát triển!",
-                                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                                return;
-                        }
-
-                        context.SaveChanges();
-                        MessageBox.Show("Xóa thành công!", "Thành công",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
-                        this.DialogResult = true;
-                        this.Close();
+                        case "VEHICLES":
+                        case "MY_VEHICLES":
+                            await DeleteVehicleAsync();
+                            break;
+                        case "RESERVATIONS":
+                        case "MY_RESERVATIONS":
+                            await DeleteReservationAsync();
+                            break;
+                        default:
+                            DeleteWithContext();
+                            break;
                     }
+
+                    MessageBox.Show("Xóa thành công!", "Thành công",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                    this.Close();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Lỗi: {ex.Message}\n\nCó thể dữ liệu này đang được sử dụng ở nơi khác.",
                         "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        private async Task DeleteVehicleAsync()
+        {
+            int vehicleId = Convert.ToInt32(GetPropertyValue("VehicleId"));
+            await _vehicleService.DeleteAsync(vehicleId);
+        }
+
+        private async Task DeleteReservationAsync()
+        {
+            int reservationId = Convert.ToInt32(GetPropertyValue("ReservationId"));
+            await _reservationService.DeleteReservationAsync(reservationId);
+        }
+
+        private void DeleteWithContext()
+        {
+            using (var context = new EvBatterySwapSystemContext())
+            {
+                switch (module)
+                {
+                    case "USERS":
+                        int userId = Convert.ToInt32(GetPropertyValue("UserId"));
+                        var user = context.Users.Find(userId);
+                        if (user != null) context.Users.Remove(user);
+                        break;
+
+                    case "STATIONS":
+                        int stationId = Convert.ToInt32(GetPropertyValue("StationId"));
+                        var station = context.Stations.Find(stationId);
+                        if (station != null) context.Stations.Remove(station);
+                        break;
+
+                    case "BATTERIES":
+                        int batteryId = Convert.ToInt32(GetPropertyValue("BatteryId"));
+                        var battery = context.Batteries.Find(batteryId);
+                        if (battery != null) context.Batteries.Remove(battery);
+                        break;
+
+                    case "VEHICLE_MODELS":
+                        int modelId = Convert.ToInt32(GetPropertyValue("ModelId"));
+                        var model = context.VehicleModels.Find(modelId);
+                        if (model != null) context.VehicleModels.Remove(model);
+                        break;
+
+                    case "SUBSCRIPTION_PLANS":
+                        int planId = Convert.ToInt32(GetPropertyValue("PlanId"));
+                        var plan = context.SubscriptionPlans.Find(planId);
+                        if (plan != null) context.SubscriptionPlans.Remove(plan);
+                        break;
+
+                    default:
+                        MessageBox.Show("Chức năng xóa đang được phát triển!",
+                            "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                }
+
+                context.SaveChanges();
             }
         }
 

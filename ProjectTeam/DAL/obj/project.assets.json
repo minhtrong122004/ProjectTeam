@@ -5010,11 +5010,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
+      "projectUniqueName": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
       "projectName": "DAL",
-      "projectPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
+      "projectPath": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\DAL\\DAL.csproj",
       "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\PRN212 (2)\\ProjectTeam\\ProjectTeam\\DAL\\obj\\",
+      "outputPath": "D:\\PRN212 (2)\\DuAnPRN212\\ProjectTeam\\ProjectTeam\\DAL\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

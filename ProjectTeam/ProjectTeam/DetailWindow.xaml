@@ -6,17 +6,133 @@
         xmlns:local="clr-namespace:ProjectTeam"
         mc:Ignorable="d"
         Title="Chi tiết" 
-        Height="600" Width="700"
+        Height="650" Width="750"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#F0F0F5">
+        Background="#F0F2F5">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="20,12">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="1" 
+                                                BlurRadius="8" 
+                                                Opacity="0.2" 
+                                                Direction="270"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.9"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Border Style -->
+        <Style x:Key="InputBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#0066CC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ReadOnly Border Style -->
+        <Style x:Key="ReadOnlyBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Background" Value="#F9FAFB"/>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- Input TextBox Style -->
+        <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style x:Key="InputComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+        </Style>
+
+        <!-- DatePicker Style -->
+        <Style x:Key="InputDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+        </Style>
+
+        <!-- ReadOnly Text Style -->
+        <Style x:Key="ReadOnlyTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
+        <!-- Main Container -->
         <Border Background="White" 
                 Margin="20" 
-                CornerRadius="10"
-                Padding="30">
+                CornerRadius="16"
+                Padding="0">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.2"/>
+                <DropShadowEffect ShadowDepth="0" 
+                                BlurRadius="30" 
+                                Opacity="0.15"
+                                Color="#000000"/>
             </Border.Effect>
 
             <Grid>
@@ -26,98 +142,104 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Title -->
-                <StackPanel Grid.Row="0" Margin="0,0,0,25">
-                    <TextBlock x:Name="txtTitle" 
-                               Text="Chi tiết thông tin" 
-                               FontSize="24" 
-                               FontWeight="Bold" 
-                               Foreground="#0066CC"/>
-                    <Border Height="3" 
-                            Background="#0066CC" 
-                            CornerRadius="2" 
-                            Margin="0,10,0,0"
-                            Width="100"
-                            HorizontalAlignment="Left"/>
-                </StackPanel>
+                <!-- Header Section -->
+                <Border Grid.Row="0" 
+                        Background="#F8FAFC"
+                        CornerRadius="16,16,0,0"
+                        Padding="35,30">
+                    <StackPanel>
+                        <TextBlock x:Name="txtTitle" 
+                                   Text="Chi tiết thông tin" 
+                                   FontSize="26" 
+                                   FontWeight="Bold" 
+                                   Foreground="#0066CC"/>
+                        <Border Height="4" 
+                                Background="#0066CC" 
+                                CornerRadius="2" 
+                                Margin="0,12,0,0"
+                                Width="120"
+                                HorizontalAlignment="Left">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="0" 
+                                                BlurRadius="8" 
+                                                Opacity="0.3"
+                                                Color="#0066CC"/>
+                            </Border.Effect>
+                        </Border>
+                    </StackPanel>
+                </Border>
 
-                <!-- Form Content -->
-                <ScrollViewer Grid.Row="1" 
-                              VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="formPanel" 
-                                Margin="0,0,0,20"/>
-                </ScrollViewer>
+                <!-- Form Content Section -->
+                <Border Grid.Row="1" 
+                        Padding="35,25,35,20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="formPanel"/>
+                    </ScrollViewer>
+                </Border>
 
-                <!-- Buttons -->
-                <StackPanel Grid.Row="2" 
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Right"
-                            Margin="0,20,0,0">
-                    <Button x:Name="btnSave"
-                            Content="💾 Lưu" 
-                            Width="120" 
-                            Height="45"
-                            Background="#28A745"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontWeight="Bold"
-                            FontSize="14"
-                            Cursor="Hand"
-                            Margin="0,0,10,0"
-                            Click="BtnSave_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" 
-                                        CornerRadius="5" Padding="15,8">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                                      VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                    <Button x:Name="btnDelete"
-                            Content="🗑️ Xóa" 
-                            Width="120" 
-                            Height="45"
-                            Background="#DC3545"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontWeight="Bold"
-                            FontSize="14"
-                            Cursor="Hand"
-                            Margin="0,0,10,0"
-                            Click="BtnDelete_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" 
-                                        CornerRadius="5" Padding="15,8">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                                      VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                    <Button Content="❌ Đóng" 
-                            Width="120" 
-                            Height="45"
-                            Background="#6C757D"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontWeight="Bold"
-                            FontSize="14"
-                            Cursor="Hand"
-                            Click="BtnClose_Click">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" 
-                                        CornerRadius="5" Padding="15,8">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                                      VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </StackPanel>
+                <!-- Footer Buttons Section -->
+                <Border Grid.Row="2" 
+                        Background="#F8FAFC"
+                        BorderBrush="#E5E7EB"
+                        BorderThickness="0,1,0,0"
+                        CornerRadius="0,0,16,16"
+                        Padding="35,25">
+                    <StackPanel Orientation="Horizontal" 
+                                HorizontalAlignment="Right">
+                        <!-- Save Button -->
+                        <Button x:Name="btnSave"
+                                Content="💾 Lưu" 
+                                Width="130" 
+                                Height="48"
+                                Background="#10B981"
+                                FontSize="14"
+                                Margin="0,0,12,0"
+                                Click="BtnSave_Click"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <Button.Effect>
+                                <DropShadowEffect ShadowDepth="2" 
+                                                BlurRadius="8" 
+                                                Opacity="0.25"
+                                                Color="#10B981"/>
+                            </Button.Effect>
+                        </Button>
+
+                        <!-- Delete Button -->
+                        <Button x:Name="btnDelete"
+                                Content="🗑️ Xóa" 
+                                Width="130" 
+                                Height="48"
+                                Background="#EF4444"
+                                FontSize="14"
+                                Margin="0,0,12,0"
+                                Click="BtnDelete_Click"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <Button.Effect>
+                                <DropShadowEffect ShadowDepth="2" 
+                                                BlurRadius="8" 
+                                                Opacity="0.25"
+                                                Color="#EF4444"/>
+                            </Button.Effect>
+                        </Button>
+
+                        <!-- Close Button -->
+                        <Button Content="❌ Đóng" 
+                                Width="130" 
+                                Height="48"
+                                Background="#6B7280"
+                                FontSize="14"
+                                Click="BtnClose_Click"
+                                Style="{StaticResource ModernButtonStyle}">
+                            <Button.Effect>
+                                <DropShadowEffect ShadowDepth="2" 
+                                                BlurRadius="8" 
+                                                Opacity="0.2"
+                                                Color="#6B7280"/>
+                            </Button.Effect>
+                        </Button>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
     </Grid>
