@@ -389,6 +389,9 @@ public partial class EvBatterySwapSystemContext : DbContext
                 .HasForeignKey(d => d.VehicleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_USERSUB_VEHICLE");
+            entity.Property(e => e.SwapLimit)
+                .HasColumnName("SwapLimit")
+                .HasDefaultValue(0);
         });
 
         modelBuilder.Entity<Vehicle>(entity =>
